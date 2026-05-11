@@ -86,13 +86,13 @@ async def finish(update, ctx):
     d = ctx.user_data
     lines = ["━━━━━━━━━━━━━━━━━━━━━━━━━━━", f"👤 {d.get('fio','—')}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"]
     for key, label in zip(KEYS, LABELS):
-        lines.append(f"*{label}:* {d.get(key, '—')}")
+        lines.append(f"{label}: {d.get(key, chr(8212))}")
     lines.append("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     summary = "\n".join(lines)
     await update.message.reply_text("✅ Готово! Анкета отправлена. Увидимся в Rocklands 🤙", parse_mode="Markdown", reply_markup=ReplyKeyboardRemove())
     user = update.effective_user
     try:
-        await ctx.bot.send_message(chat_id=ADMIN_CHAT_ID, text=f"📩 *Новая анкета* от @{user.username or user.first_name}\n\n" + summary, parse_mode="Markdown")
+        await ctx.bot.send_message(chat_id=ADMIN_CHAT_ID, text=f"📩 Новая анкета от @{user.username or user.first_name}\n\n" + summary)
     except Exception as e:
         logging.error(f"Failed to send to admin: {e}")
     return ConversationHandler.END
