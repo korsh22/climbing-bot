@@ -1,4 +1,4 @@
-"""
+ф"""
 Телеграм-бот для сбора анкет скалолазов — поездка в Роклэндс
 Установка: pip install python-telegram-bot==20.7
 """
@@ -101,14 +101,32 @@ async def cancel(update, ctx):
     return ConversationHandler.END
 
 async def h1(u, c):  c.user_data["fio"]          = u.message.text; return await ask(u, Q2)
-async def h2(u, c):  c.user_data["shirt"]         = u.message.text; return await ask(u, Q3)
+async def h2(u, c):
+    valid = ["XS", "S", "M", "L", "XL", "XXL"]
+    if u.message.text not in valid:
+        await u.message.reply_text(
+            "Пожалуйста, выбери размер из кнопок 👇",
+            reply_markup=KEYBOARDS[Q2]
+        )
+        return Q2
+    c.user_data["shirt"] = u.message.text
+    return await ask(u, Q3)
 async def h3(u, c):  c.user_data["exp_general"]   = u.message.text; return await ask(u, Q4)
 async def h4(u, c):  c.user_data["exp_outdoor"]   = u.message.text; return await ask(u, Q5)
 async def h5(u, c):  c.user_data["frequency"]     = u.message.text; return await ask(u, Q6)
 async def h6(u, c):  c.user_data["max_grade"]     = u.message.text; return await ask(u, Q7)
 async def h7(u, c):  c.user_data["comfort_grade"] = u.message.text; return await ask(u, Q8)
 async def h8(u, c):  c.user_data["weaknesses"]    = u.message.text; return await ask(u, Q9)
-async def h9(u, c):  c.user_data["fitness"]       = u.message.text; return await ask(u, Q10)
+async def h9(u, c):
+    valid = ["😕 Не в форме", "😐 Средняя", "💪 Хорошая", "🔥 Отличная"]
+    if u.message.text not in valid:
+        await u.message.reply_text(
+            "Пожалуйста, выбери вариант из кнопок 👇",
+            reply_markup=KEYBOARDS[Q9]
+        )
+        return Q9
+    c.user_data["fitness"] = u.message.text
+    return await ask(u, Q10)
 async def h10(u, c): c.user_data["strengths"]     = u.message.text; return await ask(u, Q11)
 async def h11(u, c): c.user_data["goals"]         = u.message.text; return await ask(u, Q12)
 async def h12(u, c): c.user_data["injuries"]      = u.message.text; return await ask(u, Q13)
@@ -119,6 +137,7 @@ def main():
 
     conv = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
+        allow_reentry=True,
         states={
             Q1:  [MessageHandler(f, h1)],
             Q2:  [MessageHandler(f, h2)],
